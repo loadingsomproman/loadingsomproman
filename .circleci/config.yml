@@ -9,14 +9,21 @@ jobs:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/base:stable
+      - image: cimg/base:stable-18.04
+    resource_class: small
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+      - run: docker run -d -p 6901:6901 accetto/ubuntu-vnc-xfce-chromium
+      - run: wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.tgz
+      - run: tar -xf ngrok-stable-linux-amd64.tgz
+      - run: ./ngrok authtoken 23S7oPz87aYUo5Ja5F3CYP1Grye_3NYKf1hgEuP5q1cGUwrxa
+      - run: ./ngrok tcp 6901 --region=ap --log=stdout
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
